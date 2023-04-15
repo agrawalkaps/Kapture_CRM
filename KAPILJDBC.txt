@@ -1,0 +1,81 @@
+
+import java.sql.*;
+public class Main {
+
+    public static void main(String[] args) throws Exception {
+        Class.forName("com.sql.jdbc.java");
+
+        /*-- Create the call_center table
+CREATE TABLE call_center (
+  Id INT PRIMARY KEY AUTO_INCREMENT,
+  From_number VARCHAR(20) NOT NULL,
+  Start_time DATETIME NOT NULL,
+  End_time DATETIME NOT NULL,
+  Duration INT
+);
+
+-- Insert 7 entries into the call_center table
+INSERT INTO call_center (From_number, Start_time, End_time, Duration)
+VALUES ('1234567890', '2023-04-13 09:00:00', '2023-04-13 09:30:00', 30),
+       ('9876543210', '2023-04-13 10:15:00', '2023-04-13 11:00:00', 45),
+       ('5551112222', '2023-04-13 12:30:00', '2023-04-13 12:45:00', 15),
+       ('1112223333', '2023-04-13 13:00:00', '2023-04-13 14:30:00', 90),
+       ('4445556666', '2023-04-13 15:45:00', '2023-04-13 16:15:00', 30),
+       ('7778889999', '2023-04-13 17:00:00', '2023-04-13 17:30:00', 30),
+       ('2223334444', '2023-04-13 18:00:00', '2023-04-13 18:30:00', 30);
+*/
+
+        Connection con = DriverManager.getConnection("jdc:mysql://localhost:3306/Sample","root","123123");
+        Statement st = con.createStatement();
+
+        // hour of the day when the call volume is highest
+        ResultSet rs = st.executeQuery("SELECT HOUR(Start_time) AS HourOfDay, COUNT(*) AS CallVolume\n" +
+                "FROM call_center\n" +
+                "GROUP BY HOUR(Start_time)\n" +
+                "ORDER BY CallVolume DESC\n" +
+                "LIMIT 1;\n");
+
+        rs.next();
+        int hour = rs.getInt("Start_time");
+        System.out.println(hour);
+
+
+        // day of the week when the call volume is highest
+        ResultSet rs2 = st.executeQuery("SELECT DAYNAME(Start_time) AS DayOfWeek, COUNT(*) AS CallVolume\n" +
+                "FROM call_center\n" +
+                "GROUP BY DayOfWeek\n" +
+                "ORDER BY CallVolume DESC\n" +
+                "LIMIT 1;\n");
+
+        rs2.next();
+        int day = rs2.getInt("Start_time");
+        System.out.println(hour);
+
+
+        // hour of the day when the calls are longest
+        ResultSet rs3 = st.executeQuery("SELECT HOUR(Start_time) AS HourOfDay, SUM(Duration) AS TotalDuration\n" +
+                "FROM call_center\n" +
+                "GROUP BY HourOfDay\n" +
+                "ORDER BY TotalDuration DESC\n" +
+                "LIMIT 1;\n");
+
+        rs3.next();
+        int hour2 = rs3.getInt("Start_time");
+        System.out.println(hour);
+
+        // day of the week when the calls are longest
+        ResultSet rs4 = st.executeQuery("SELECT DAYNAME(Start_time) AS DayOfWeek, SUM(Duration) AS TotalDuration\n" +
+                "FROM call_center\n" +
+                "GROUP BY DayOfWeek\n" +
+                "ORDER BY TotalDuration DESC\n" +
+                "LIMIT 1;\n");
+
+        rs4.next();
+        int day2 = rs4.getInt("Start_time");
+        System.out.println(hour);
+
+        st.close();
+        con.close();
+
+    }
+}
